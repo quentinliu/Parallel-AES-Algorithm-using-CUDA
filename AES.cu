@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cuda.h>
 #define BYTE unsigned char
+#define BLOCK_SIZE 16
 
 using namespace std;
 
@@ -413,6 +414,7 @@ int main(int argc, char* argv[]) {
 int block_number = infileLength/16 ;
 int number_of_zero_pending = infileLength%16;
 aes_block* aes_block_array;
+int padding=BLOCK_SIZE-number_of_zero_pending;
 
 BYTE key[16 * (14 + 1)];
 int keyLen = 0;
@@ -480,7 +482,7 @@ if(number_of_zero_pending != 0)
         aes_block_array[block_number].block[j] = (unsigned char)temp[j];
     }
     for(int j=1; j<=16-number_of_zero_pending; j++)
-        aes_block_array[block_number].block[16-j] = '\0';
+        aes_block_array[block_number].block[16-j] = padding;
     //f1printBytes(aes_block_array[block_number].block, blockLen, orig_fp);
     //AES_Encrypt(aes_block_array[block_number].block, key, expandKeyLen);
     //printf("After Encryption:\n"); printBytes(block, blockLen);
